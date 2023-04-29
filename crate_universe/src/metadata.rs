@@ -77,6 +77,7 @@ impl MetadataGenerator for Generator {
         let metadata = self
             .cargo_bin
             .metadata_command()?
+            .features(cargo_metadata::CargoOpt::AllFeatures)
             .current_dir(manifest_dir)
             .manifest_path(manifest_path.as_ref())
             .other_options(["--locked".to_owned()])
