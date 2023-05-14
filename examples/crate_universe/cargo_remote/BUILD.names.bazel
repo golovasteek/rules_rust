@@ -27,7 +27,7 @@ rust_binary(
     version = "0.12.0",
     deps = all_crate_deps(normal = True) + [
         ":names",
-        "@crate_index_cargo_remote//:clap",
+        "@crate_index_cargo_remote//:clap",  # Clap is optional dependency and has to be added manually
     ],
 )
 
