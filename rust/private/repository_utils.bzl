@@ -247,11 +247,12 @@ rust_toolchain(
     staticlib_ext = "{staticlib_ext}",
     dylib_ext = "{dylib_ext}",
     stdlib_linkflags = [{stdlib_linkflags}],
-    os = "{system}",
     default_edition = "{default_edition}",
     exec_triple = "{exec_triple}",
     target_triple = "{target_triple}",
     visibility = ["//visibility:public"],
+    extra_rustc_flags = {extra_rustc_flags},
+    extra_exec_rustc_flags = {extra_exec_rustc_flags},
 )
 """
 
@@ -264,7 +265,9 @@ def BUILD_for_rust_toolchain(
         default_edition,
         include_rustfmt,
         include_llvm_tools,
-        stdlib_linkflags = None):
+        stdlib_linkflags = None,
+        extra_rustc_flags = None,
+        extra_exec_rustc_flags = None):
     """Emits a toolchain declaration to match an existing compiler and stdlib.
 
     Args:
@@ -281,7 +284,8 @@ def BUILD_for_rust_toolchain(
         stdlib_linkflags (list, optional): Overriden flags needed for linking to rust
                                            stdlib, akin to BAZEL_LINKLIBS. Defaults to
                                            None.
-
+        extra_rustc_flags (list, optional): Extra flags to pass to rustc in non-exec configuration.
+        extra_exec_rustc_flags (list, optional): Extra flags to pass to rustc in exec configuration.
 
     Returns:
         str: A rendered template of a `rust_toolchain` declaration
@@ -312,13 +316,14 @@ def BUILD_for_rust_toolchain(
         allocator_library = allocator_library_label,
         global_allocator_library = global_allocator_library_label,
         stdlib_linkflags = stdlib_linkflags,
-        system = target_triple.system,
         default_edition = default_edition,
         exec_triple = exec_triple.str,
         target_triple = target_triple.str,
         rustfmt_label = rustfmt_label,
         llvm_cov_label = llvm_cov_label,
         llvm_profdata_label = llvm_profdata_label,
+        extra_rustc_flags = extra_rustc_flags,
+        extra_exec_rustc_flags = extra_exec_rustc_flags,
     )
 
 _build_file_for_toolchain_template = """\
