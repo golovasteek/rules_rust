@@ -44,7 +44,7 @@ impl DependencySet {
                 .filter(|dep| !is_workspace_member(dep, metadata))
                 .filter(|dep| is_lib_package(&metadata[&dep.pkg]))
                 .filter(|dep| is_normal_dependency(dep) || is_dev_dependency(dep))
-                .filter(|dep| !is_optional_dependency(dep, &metadata, &node))
+                .filter(|dep| !is_optional_dependency(dep, metadata, node))
                 .partition(|dep| is_dev_dependency(dep));
 
             (
@@ -61,7 +61,7 @@ impl DependencySet {
                 .filter(|dep| !is_workspace_member(dep, metadata))
                 .filter(|dep| is_proc_macro_package(&metadata[&dep.pkg]))
                 .filter(|dep| !is_build_dependency(dep))
-                .filter(|dep| !is_optional_dependency(dep, &metadata, &node))
+                .filter(|dep| !is_optional_dependency(dep, metadata, node))
                 .partition(|dep| is_dev_dependency(dep));
 
             (
@@ -80,7 +80,7 @@ impl DependencySet {
                 .filter(|dep| !is_workspace_member(dep, metadata))
                 .filter(|dep| is_build_dependency(dep))
                 .filter(|dep| !is_dev_dependency(dep))
-                .filter(|dep| !is_optional_dependency(dep, &metadata, &node))
+                .filter(|dep| !is_optional_dependency(dep, metadata, node))
                 .partition(|dep| is_proc_macro_package(&metadata[&dep.pkg]));
 
             (
@@ -91,7 +91,7 @@ impl DependencySet {
 
         // `*-sys` packages follow slightly different rules than other dependencies. These
         // packages seem to provide some environment variables required to build the top level
-        // package and are expected to be avialable to other build scripts. If a target depends
+        // package and are expected to be available to other build scripts. If a target depends
         // on a `*-sys` crate for itself, so would it's build script. Hopefully this is correct.
         // https://doc.rust-lang.org/cargo/reference/build-scripts.html#the-links-manifest-key
         // https://doc.rust-lang.org/cargo/reference/build-scripts.html#-sys-packages
@@ -114,7 +114,7 @@ impl DependencySet {
         let all_optional = node
             .deps
             .iter()
-            .filter(|dep| is_optional_dependency(dep, &metadata, &node))
+            .filter(|dep| is_optional_dependency(dep, metadata, node))
             .collect();
         let all_optional_deps = collect_deps_selectable(node, all_optional, metadata);
 
@@ -251,13 +251,11 @@ fn is_optional_dependency(node_dep: &NodeDep, metadata: &CargoMetadata, node: &N
         return false;
     }
 
-    let result = metadata[&node.id].dependencies
-        .iter()
-        .any(|dep| {
-            let normalized_dep_name = dep.name.replace("-", "_");
-            let normalized_node_dep_name = node_dep.name.replace("-", "_");
-            normalized_dep_name == normalized_node_dep_name && dep.optional
-        });
+    let result = metadata[&node.id].dependencies.iter().any(|dep| {
+        let normalized_dep_name = dep.name.replace('-', "_");
+        let normalized_node_dep_name = node_dep.name.replace('-', "_");
+        normalized_dep_name == normalized_node_dep_name && dep.optional
+    });
     result
 }
 
@@ -296,7 +294,7 @@ fn get_library_target_name(package: &Package, potential_name: &str) -> Result<St
 /// for targets where packages (packages[#].targets[#].name) uses crate names. In order to
 /// determine whether or not a dependency is aliased, we compare it with all available targets
 /// on it's package. Note that target names are not guaranteed to be module names where Node
-/// dependnecies are, so we need to do a conversion to check for this
+/// dependencies are, so we need to do a conversion to check for this
 fn get_target_alias(target_name: &str, package: &Package) -> Option<String> {
     match package
         .targets
