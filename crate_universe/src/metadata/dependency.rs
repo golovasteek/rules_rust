@@ -1,5 +1,7 @@
 //! Gathering dependencies is the largest part of annotating.
 
+use std::collections::HashSet;
+
 use anyhow::{bail, Result};
 use cargo_metadata::{Metadata as CargoMetadata, Node, NodeDep, Package, PackageId};
 use cargo_platform::Platform;
@@ -251,12 +253,35 @@ fn is_optional_dependency(node_dep: &NodeDep, metadata: &CargoMetadata, node: &N
         return false;
     }
 
-    let result = metadata[&node.id].dependencies.iter().any(|dep| {
+    let is_optional = metadata[&node.id].dependencies.iter().any(|dep| {
         let normalized_dep_name = dep.name.replace('-', "_");
         let normalized_node_dep_name = node_dep.name.replace('-', "_");
         normalized_dep_name == normalized_node_dep_name && dep.optional
     });
-    result
+    if !is_optional {
+        return false
+    }
+
+    // Recursively go through all the features and check if any of them enables the dependency
+    let mut features_to_explore  = vec!["default".to_string()];
+    let mut explored_features = HashSet::new();
+    while let Some(feature) = features_to_explore.pop() {
+        if explored_features.contains(&feature) {
+            continue;
+        }
+        explored_features.insert(feature.clone());
+        let required = metadata[&node.id].features[&feature].iter().all(|dep| {
+            if dep == &format!("dep:{}", node_dep.name) {
+                return true;
+            }
+            features_to_explore.push(dep.clone());
+            true
+        });
+        if required {
+            return false;
+        }
+    };
+    return true
 }
 
 fn get_library_target_name(package: &Package, potential_name: &str) -> Result<String> {
