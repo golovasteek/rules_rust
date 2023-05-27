@@ -259,11 +259,11 @@ fn is_optional_dependency(node_dep: &NodeDep, metadata: &CargoMetadata, node: &N
         normalized_dep_name == normalized_node_dep_name && dep.optional
     });
     if !is_optional {
-        return false
+        return false;
     }
 
     // Recursively go through all the features and check if any of them enables the dependency
-    let mut features_to_explore  = vec!["default".to_string()];
+    let mut features_to_explore = vec!["default".to_string()];
     let mut explored_features = HashSet::new();
     while let Some(feature) = features_to_explore.pop() {
         if explored_features.contains(&feature) {
@@ -280,8 +280,8 @@ fn is_optional_dependency(node_dep: &NodeDep, metadata: &CargoMetadata, node: &N
         if required {
             return false;
         }
-    };
-    return true
+    }
+    true
 }
 
 fn get_library_target_name(package: &Package, potential_name: &str) -> Result<String> {
