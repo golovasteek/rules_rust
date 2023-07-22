@@ -92,23 +92,12 @@ impl DependencySet {
             )
         };
 
-<<<<<<< HEAD
-        // `*-sys` packages follow slightly different rules than other dependencies. These
-        // packages seem to provide some environment variables required to build the top level
-        // package and are expected to be available to other build scripts. If a target depends
-        // on a `*-sys` crate for itself, so would it's build script. Hopefully this is correct.
-||||||| 937e6339
-        // `*-sys` packages follow slightly different rules than other dependencies. These
-        // packages seem to provide some environment variables required to build the top level
-        // package and are expected to be avialable to other build scripts. If a target depends
-        // on a `*-sys` crate for itself, so would it's build script. Hopefully this is correct.
-=======
+
         // packages with the `links` property follow slightly different rules than other
         // dependencies. These packages provide zero or more environment variables to the build
         // script's of packages that directly (non-transitively) depend on these packages. Note that
         // dependency specifically means of the package (`dependencies`), and not of the build
         // script (`build-dependencies`).
->>>>>>> main
         // https://doc.rust-lang.org/cargo/reference/build-scripts.html#the-links-manifest-key
         // https://doc.rust-lang.org/cargo/reference/build-scripts.html#-sys-packages
         // https://doc.rust-lang.org/cargo/reference/build-script-examples.html#using-another-sys-crate
