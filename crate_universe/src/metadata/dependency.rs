@@ -92,7 +92,6 @@ impl DependencySet {
             )
         };
 
-
         // packages with the `links` property follow slightly different rules than other
         // dependencies. These packages provide zero or more environment variables to the build
         // script's of packages that directly (non-transitively) depend on these packages. Note that
