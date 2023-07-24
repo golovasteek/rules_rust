@@ -42,10 +42,20 @@ pub struct Generator {
 impl Generator {
     pub fn new() -> Self {
         Generator {
-            cargo_bin: Cargo::new(PathBuf::from(
-                env::var("CARGO").unwrap_or_else(|_| "cargo".to_string()),
-            )),
-            rustc_bin: PathBuf::from(env::var("RUSTC").unwrap_or_else(|_| "rustc".to_string())),
+            // Since we may change directories, where cargo or rust are
+            // executed. We need to resovle the absolute path to the binaries.
+            cargo_bin: Cargo::new(match env::var("CARGO") {
+                Ok(path) => PathBuf::from(path)
+                    .canonicalize()
+                    .expect("Can not canonicalize cargo path"),
+                _ => PathBuf::from("cargo".to_string()),
+            }),
+            rustc_bin: match env::var("RUSTC") {
+                Ok(path) => PathBuf::from(path)
+                    .canonicalize()
+                    .expect("Can not canonicalize rustc path"),
+                _ => PathBuf::from("rustc".to_string()),
+            },
         }
     }
 
@@ -71,12 +81,14 @@ impl MetadataGenerator for Generator {
             if !lock_path.exists() {
                 bail!("No `Cargo.lock` file was found with the given manifest")
             }
-            cargo_lock::Lockfile::load(lock_path)?
+            cargo_lock::Lockfile::load(lock_path).expect("Can not lockfile")
         };
 
         let metadata = self
             .cargo_bin
-            .metadata_command()?
+            .metadata_command().expect("Can not create cargo metadata command")
+            .verbose(true)
+            .env("RUSTC", self.rustc_bin.to_str().unwrap())
             .features(cargo_metadata::CargoOpt::AllFeatures)
             .current_dir(manifest_dir)
             .manifest_path(manifest_path.as_ref())
@@ -714,6 +726,24 @@ mod test {
                     BTreeSet::from(["default".to_owned(), "std".to_owned(), "serde".to_owned()])
                 ),
             ])
+        );
+    }
+
+    #[test]
+    fn generate_metadata_for_crate_with_optional_deps() {
+        let generator = Generator::new();
+        let result = generator.generate(
+            PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+                .join("test_data")
+                .join("crate_with_features")
+                .join("Cargo.toml"),
+        );
+
+        let (metadata, _lockfile) = result.expect("Failed to generate metadata");
+        let resolve = metadata.resolve.unwrap();
+        assert!(resolve.nodes.iter()
+            .find(|n| n.id.repr.starts_with("notify"))
+            .is_some(),
         );
     }
 }
