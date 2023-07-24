@@ -76,6 +76,7 @@ impl MetadataGenerator for Generator {
             .as_ref()
             .parent()
             .expect("The manifest should have a parent directory");
+        println!("Looking for a Cargo.lock file in {:?}", manifest_dir);
         let lockfile = {
             let lock_path = manifest_dir.join("Cargo.lock");
             if !lock_path.exists() {
@@ -732,11 +733,11 @@ mod test {
     #[test]
     fn generate_metadata_for_crate_with_optional_deps() {
         let generator = Generator::new();
+        let runfiles = runfiles::Runfiles::create().unwrap();
+        let matinfest_path = runfiles.rlocation(
+            "rules_rust/crate_universe/test_data/crate_with_features/Cargo.toml");
         let result = generator.generate(
-            PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-                .join("test_data")
-                .join("crate_with_features")
-                .join("Cargo.toml"),
+            PathBuf::from(matinfest_path),
         );
 
         let (metadata, _lockfile) = result.expect("Failed to generate metadata");
