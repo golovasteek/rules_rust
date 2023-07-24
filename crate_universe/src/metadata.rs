@@ -733,12 +733,12 @@ mod test {
     #[test]
     fn generate_metadata_for_crate_with_optional_deps() {
         let cargo_home: PathBuf = PathBuf::from(
-            env::var("TEST_TMPDIR").context("TEST_TMPDIR environment variable must be set.")?,
+            env::var("TEST_TMPDIR").expect("TEST_TMPDIR environment variable must be set."),
         )
         .join("cargo_home");
         env::set_var("CARGO_HOME", cargo_home.as_os_str());
-        fs::create_dir_all(&cargo_home)?;
-        
+        fs::create_dir_all(&cargo_home).expect("Can not create directories");
+
         let generator = Generator::new();
         let runfiles = runfiles::Runfiles::create().unwrap();
         let matinfest_path = runfiles.rlocation(
