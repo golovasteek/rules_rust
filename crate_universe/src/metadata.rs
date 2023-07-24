@@ -87,7 +87,8 @@ impl MetadataGenerator for Generator {
 
         let metadata = self
             .cargo_bin
-            .metadata_command().expect("Can not create cargo metadata command")
+            .metadata_command()
+            .expect("Can not create cargo metadata command")
             .verbose(true)
             .env("RUSTC", self.rustc_bin.to_str().unwrap())
             .features(cargo_metadata::CargoOpt::AllFeatures)
@@ -741,17 +742,16 @@ mod test {
 
         let generator = Generator::new();
         let runfiles = runfiles::Runfiles::create().unwrap();
-        let matinfest_path = runfiles.rlocation(
-            "rules_rust/crate_universe/test_data/crate_with_features/Cargo.toml");
-        let result = generator.generate(
-            PathBuf::from(matinfest_path),
-        );
+        let matinfest_path = runfiles
+            .rlocation("rules_rust/crate_universe/test_data/crate_with_features/Cargo.toml");
+        let result = generator.generate(PathBuf::from(matinfest_path));
 
         let (metadata, _lockfile) = result.expect("Failed to generate metadata");
         let resolve = metadata.resolve.unwrap();
-        assert!(resolve.nodes.iter()
+        assert!(resolve
+            .nodes
+            .iter()
             .find(|n| n.id.repr.starts_with("notify"))
-            .is_some(),
-        );
+            .is_some(),);
     }
 }
