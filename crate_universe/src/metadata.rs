@@ -744,14 +744,13 @@ mod test {
         let runfiles = runfiles::Runfiles::create().unwrap();
         let matinfest_path = runfiles
             .rlocation("rules_rust/crate_universe/test_data/crate_with_features/Cargo.toml");
-        let result = generator.generate(PathBuf::from(matinfest_path));
+        let result = generator.generate(matinfest_path);
 
         let (metadata, _lockfile) = result.expect("Failed to generate metadata");
         let resolve = metadata.resolve.unwrap();
         assert!(resolve
             .nodes
             .iter()
-            .find(|n| n.id.repr.starts_with("notify"))
-            .is_some(),);
+            .any(|n| n.id.repr.starts_with("notify")));
     }
 }
