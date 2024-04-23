@@ -811,9 +811,9 @@ def load_arbitrary_tool(
     return {archive_path: sha256}
 
 # The function is copied from the main branch of bazel_tools.
-# It should become available there from version 8.0.0,
+# It should become available there from version 7.1.0,
 # We should remove this function when we upgrade minimum supported
-# version to 8.0.0.
+# version to 7.1.0.
 # https://github.com/bazelbuild/bazel/blob/d37762b494a4e122d46a5a71e3a8cc77fa15aa25/tools/build_defs/repo/utils.bzl#L424-L446
 def _get_auth(ctx, urls):
     """Utility function to obtain the correct auth dict for a list of urls from .netrc file.
