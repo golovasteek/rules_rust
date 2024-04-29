@@ -309,9 +309,6 @@ _RUST_TOOLCHAIN_REPOSITORY_ATTRS = {
             "See [repository_ctx.download](https://docs.bazel.build/versions/main/skylark/lib/repository_ctx.html#download) for more details."
         ),
     ),
-    "netrc": attr.string(
-        doc = ".netrc file to use for authentication; mirrors the eponymous attribute from http_archive",
-    ),
     "auth_patterns": attr.string_list(
         doc = "A list of patterns to match against urls for which the auth object should be used.",
     ),
@@ -341,6 +338,9 @@ _RUST_TOOLCHAIN_REPOSITORY_ATTRS = {
     ),
     "iso_date": attr.string(
         doc = "The date of the tool (or None, if the version is a specific version).",
+    ),
+    "netrc": attr.string(
+        doc = ".netrc file to use for authentication; mirrors the eponymous attribute from http_archive",
     ),
     "opt_level": attr.string_dict(
         doc = "Rustc optimization levels. For more details see the documentation for `rust_toolchain.opt_level`.",
@@ -651,14 +651,14 @@ _RUST_ANALYZER_TOOLCHAIN_TOOLS_REPOSITORY_ATTRS = {
             "See [repository_ctx.download](https://docs.bazel.build/versions/main/skylark/lib/repository_ctx.html#download) for more details."
         ),
     ),
-    "netrc": attr.string(
-        doc = ".netrc file to use for authentication; mirrors the eponymous attribute from http_archive",
-    ),
     "auth_patterns": attr.string_list(
         doc = "A list of patterns to match against urls for which the auth object should be used.",
     ),
     "iso_date": attr.string(
         doc = "The date of the tool (or None, if the version is a specific version).",
+    ),
+    "netrc": attr.string(
+        doc = ".netrc file to use for authentication; mirrors the eponymous attribute from http_archive",
     ),
     "sha256s": attr.string_dict(
         doc = "A dict associating tool subdirectories to sha256 hashes. See [rust_register_toolchains](#rust_register_toolchains) for more details.",
@@ -786,9 +786,6 @@ _RUSTFMT_TOOLCHAIN_TOOLS_ATTRS = {
             "See [repository_ctx.download](https://docs.bazel.build/versions/main/skylark/lib/repository_ctx.html#download) for more details."
         ),
     ),
-    "netrc": attr.string(
-        doc = ".netrc file to use for authentication; mirrors the eponymous attribute from http_archive",
-    ),
     "auth_patterns": attr.string_dict(
         doc = "Override mapping of hostnames to authorization patterns; mirrors the eponymous attribute from http_archive",
     ),
@@ -798,6 +795,9 @@ _RUSTFMT_TOOLCHAIN_TOOLS_ATTRS = {
     ),
     "iso_date": attr.string(
         doc = "The date of the tool (or None, if the version is a specific version).",
+    ),
+    "netrc": attr.string(
+        doc = ".netrc file to use for authentication; mirrors the eponymous attribute from http_archive",
     ),
     "sha256s": attr.string_dict(
         doc = "A dict associating tool subdirectories to sha256 hashes. See [rust_register_toolchains](#rust_register_toolchains) for more details.",
